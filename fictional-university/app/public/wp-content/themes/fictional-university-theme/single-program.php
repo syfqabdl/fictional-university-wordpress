@@ -1,4 +1,6 @@
-<?php get_header();
+<?php 
+
+get_header();
 
   while(have_posts()) {
     the_post(); ?>
@@ -22,7 +24,36 @@
         <?php the_content(); ?>
       </div>
 
-      <?php 
+      <?php
+      
+      $relatedProfessors = new WP_Query (array(
+        'posts_per_page' => -1,
+        'post_type' => 'professor',
+        'meta_query' => array(
+          array(
+            'key' => 'related_programs',
+            'value' => '"' . get_the_ID() . '"',
+            'compare' => 'LIKE' //Like maksudnya contains/mengandungi.
+          )
+        ),
+        'orderby' => 'title',
+        'order' => 'ASC'                   
+      ));
+
+      if($relatedProfessors -> have_posts()){
+
+      echo '<hr class="section-break">';
+      echo '<h2 class="headline headline--medium" >'. get_the_title() . ' Professors</h2>';
+
+      while($relatedProfessors->have_posts()) {
+        $relatedProfessors->the_post(); ?>
+        <li><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></li>
+
+      <?php }
+      }
+
+      wp_reset_postdata();
+      
           
               $today = date('Ymd');
               $homepageEvents = new WP_Query (array(
@@ -42,7 +73,8 @@
                     'compare' => 'LIKE' //Like maksudnya contains/mengandungi.
                   )
                 ),
-                'orderby' => 'meta_value_num'               
+                'orderby' => 'meta_value_num',
+                'order' => 'ASC'               
               ));
 
               if($homepageEvents -> have_posts()){
